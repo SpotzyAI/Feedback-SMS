@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Voice Assistant Feedback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Translations object
+        const translations = {
+            el: {
+                pageTitle: "Πώς ήταν η εμπειρία σας;",
+                pageSubtitle: "Η γνώμη σας μας βοηθά να βελτιωθούμε",
+                ratingLabel: "Βαθμολογήστε την εμπειρία σας",
+                ratingBad: "Κακή",
+                ratingExcellent: "Εξαιρετική",
+                buttonSubmit: "Αποστολή Feedback",
+                buttonSelectFirst: "Επιλέξτε βαθμολογία πρώτα",
+                privacy: "Τα στοιχεία σας προστατεύονται και χρησιμοποιούνται μόνο για τη βελτίωση των υπηρεσιών μας",
+                optional: "Προαιρετικό",
+                thankYouTitle: "Ευχαριστούμε!",
+                thankYouMessage: "Η γνώμη σας είναι πολύτιμη για εμάς και μας βοηθά να βελτιώνουμε συνεχώς τις υπηρεσίες μας.",
+                ratings: {
+                    5: {
+                        title: "Υπέροχα! 🎉",
+                        message: "Χαιρόμαστε πολύ που είχατε εξαιρετική εμπειρία!",
+                        question: "Τι σας άρεσε περισσότερο;",
+                        placeholder: "Π.χ. Η ταχύτητα απάντησης, η σαφήνεια, η φιλικότητα..."
+                    },
+                    4: {
+                        title: "Ευχαριστούμε! 😊",
+                        message: "Χαιρόμαστε που είχατε θετική εμπειρία!",
+                        question: "Τι μπορούμε να βελτιώσουμε;",
+                        placeholder: "Π.χ. Περισσότερες λεπτομέρειες, ταχύτητα, κατανόηση..."
+                    },
+                    3: {
+                        title: "Ευχαριστούμε για το feedback",
+                        message: "Η γνώμη σας μας βοηθά να βελτιωθούμε.",
+                        question: "Τι δεν σας άρεσε;",
+                        placeholder: "Πείτε μας τι θα μπορούσε να πάει καλύτερα..."
+                    },
+                    2: {
+                        title: "Ευχαριστούμε για την ειλικρίνεια",
+                        message: "Λυπούμαστε που δεν είχατε καλή εμπειρία.",
+                        question: "Τι δεν πήγε καλά;",
+                        placeholder: "Πείτε μας τι δεν λειτούργησε σωστά..."
+                    },
+                    1: {
+                        title: "Ευχαριστούμε για την ειλικρίνεια σας",
+                        message: "Λυπούμαστε πραγματικά που δεν μπορέσαμε να σας εξυπηρετήσουμε σωστά.",
+                        question: "Τι δεν πήγε καλά;",
+                        placeholder: "Η γνώμη σας είναι πολύτιμη για να διορθώσουμε το πρόβλημα..."
+                    }
+                }
+            },
+            en: {
+                pageTitle: "How was your experience?",
+                pageSubtitle: "Your feedback helps us improve",
+                ratingLabel: "Rate your experience",
+                ratingBad: "Poor",
+                ratingExcellent: "Excellent",
+                buttonSubmit: "Submit Feedback",
+                buttonSelectFirst: "Select a rating first",
+                privacy: "Your data is protected and used only to improve our services",
+                optional: "Optional",
+                thankYouTitle: "Thank you!",
+                thankYouMessage: "Your feedback is valuable to us and helps us continuously improve our services.",
+                ratings: {
+                    5: {
+                        title: "Wonderful! 🎉",
+                        message: "We're so glad you had an excellent experience!",
+                        question: "What did you like most?",
+                        placeholder: "E.g. Response speed, clarity, friendliness..."
+                    },
+                    4: {
+                        title: "Thank you! 😊",
+                        message: "We're happy you had a positive experience!",
+                        question: "What can we improve?",
+                        placeholder: "E.g. More details, speed, understanding..."
+                    },
+                    3: {
+                        title: "Thank you for the feedback",
+                        message: "Your opinion helps us improve.",
+                        question: "What didn't you like?",
+                        placeholder: "Tell us what could have been better..."
+                    },
+                    2: {
+                        title: "Thank you for your honesty",
+                        message: "We're sorry you didn't have a good experience.",
+                        question: "What went wrong?",
+                        placeholder: "Tell us what didn't work properly..."
+                    },
+                    1: {
+                        title: "Thank you for your honesty",
+                        message: "We're truly sorry we couldn't serve you properly.",
+                        question: "What went wrong?",
+                        placeholder: "Your feedback is valuable to help us fix the issue..."
+                    }
+                }
+            },
+            ru: {
+                pageTitle: "Как прошёл ваш опыт?",
+                pageSubtitle: "Ваше мнение помогает нам улучшаться",
+                ratingLabel: "Оцените ваш опыт",
+                ratingBad: "Плохо",
+                ratingExcellent: "Отлично",
+                buttonSubmit: "Отправить отзыв",
+                buttonSelectFirst: "Сначала выберите оценку",
+                privacy: "Ваши данные защищены и используются только для улучшения наших услуг",
+                optional: "Необязательно",
+                thankYouTitle: "Спасибо!",
+                thankYouMessage: "Ваше мнение очень важно для нас и помогает постоянно улучшать наши услуги.",
+                ratings: {
+                    5: {
+                        title: "Замечательно! 🎉",
+                        message: "Мы очень рады, что у вас был отличный опыт!",
+                        question: "Что вам понравилось больше всего?",
+                        placeholder: "Например: скорость ответа, ясность, дружелюбие..."
+                    },
+                    4: {
+                        title: "Спасибо! 😊",
+                        message: "Рады, что у вас был положительный опыт!",
+                        question: "Что мы можем улучшить?",
+                        placeholder: "Например: больше деталей, скорость, понимание..."
+                    },
+                    3: {
+                        title: "Спасибо за отзыв",
+                        message: "Ваше мнение помогает нам улучшаться.",
+                        question: "Что вам не понравилось?",
+                        placeholder: "Расскажите, что могло быть лучше..."
+                    },
+                    2: {
+                        title: "Спасибо за честность",
+                        message: "Нам жаль, что у вас не было хорошего опыта.",
+                        question: "Что пошло не так?",
+                        placeholder: "Расскажите, что работало неправильно..."
+                    },
+                    1: {
+                        title: "Спасибо за вашу честность",
+                        message: "Нам очень жаль, что мы не смогли обслужить вас должным образом.",
+                        question: "Что пошло не так?",
+                        placeholder: "Ваше мнение ценно для исправления проблемы..."
+                    }
+                }
+            },
+            he: {
+                pageTitle: "איך הייתה החוויה שלך?",
+                pageSubtitle: "המשוב שלך עוזר לנו להשתפר",
+                ratingLabel: "דרג את החוויה שלך",
+                ratingBad: "גרועה",
+                ratingExcellent: "מצוינת",
+                buttonSubmit: "שלח משוב",
+                buttonSelectFirst: "בחר דירוג תחילה",
+                privacy: "הנתונים שלך מוגנים ומשמשים רק לשיפור השירותים שלנו",
+                optional: "אופציונלי",
+                thankYouTitle: "תודה רבה!",
+                thankYouMessage: "המשוב שלך חשוב לנו ועוזר לנו לשפר באופן מתמיד את השירותים שלנו.",
+                ratings: {
+                    5: {
+                        title: "נפלא! 🎉",
+                        message: "אנחנו כל כך שמחים שהייתה לך חוויה מצוינת!",
+                        question: "מה אהבת הכי הרבה?",
+                        placeholder: "למשל: מהירות תגובה, בהירות, ידידותיות..."
+                    },
+                    4: {
+                        title: "תודה! 😊",
+                        message: "אנחנו שמחים שהייתה לך חוויה חיובית!",
+                        question: "מה אנחנו יכולים לשפר?",
+                        placeholder: "למשל: יותר פרטים, מהירות, הבנה..."
+                    },
+                    3: {
+                        title: "תודה על המשוב",
+                        message: "הדעה שלך עוזרת לנו להשתפר.",
+                        question: "מה לא אהבת?",
+                        placeholder: "ספר לנו מה יכול היה להיות טוב יותר..."
+                    },
+                    2: {
+                        title: "תודה על הכנות",
+                        message: "אנחנו מצטערים שלא הייתה לך חוויה טובה.",
+                        question: "מה השתבש?",
+                        placeholder: "ספר לנו מה לא עבד כמו שצריך..."
+                    },
+                    1: {
+                        title: "תודה על הכנות שלך",
+                        message: "אנחנו באמת מצטערים שלא הצלחנו לשרת אותך כראוי.",
+                        question: "מה השתבש?",
+                        placeholder: "המשוב שלך חשוב כדי לתקן את הבעיה..."
+                    }
+                }
+            }
+        };
+
+        // Language names
+        const languageNames = {
+            el: "Ελληνικά",
+            en: "English",
+            ru: "Русский",
+            he: "עברית"
+        };
+
+        // Lucide Icons (inline SVG)
+        const Star = ({ className, ...props }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+        );
+
+        const Send = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+        );
+
+        const MessageSquare = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+        );
+
+        const ThumbsUp = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+            </svg>
+        );
+
+        const Frown = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M16 16s-1.5-2-4-2-4 2-4 2"></path>
+                <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                <line x1="15" y1="9" x2="15.01" y2="9"></line>
+            </svg>
+        );
+
+        const Globe = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+        );
+
+        function FeedbackForm() {
+            const [language, setLanguage] = useState('el');
+            const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+            const [rating, setRating] = useState(0);
+            const [hoveredRating, setHoveredRating] = useState(0);
+            const [comment, setComment] = useState('');
+            const [submitted, setSubmitted] = useState(false);
+
+            const t = translations[language];
+
+            const getRatingContent = () => {
+                if (!rating) return null;
+                const ratingData = t.ratings[rating];
+                
+                switch(rating) {
+                    case 5:
+                        return {
+                            icon: <ThumbsUp className="w-12 h-12 text-green-500 mx-auto mb-4" />,
+                            ...ratingData
+                        };
+                    case 4:
+                        return {
+                            icon: <ThumbsUp className="w-12 h-12 text-blue-500 mx-auto mb-4" />,
+                            ...ratingData
+                        };
+                    case 3:
+                        return {
+                            icon: <MessageSquare className="w-12 h-12 text-yellow-500 mx-auto mb-4" />,
+                            ...ratingData
+                        };
+                    case 2:
+                        return {
+                            icon: <Frown className="w-12 h-12 text-orange-500 mx-auto mb-4" />,
+                            ...ratingData
+                        };
+                    case 1:
+                        return {
+                            icon: <Frown className="w-12 h-12 text-red-500 mx-auto mb-4" />,
+                            ...ratingData
+                        };
+                    default:
+                        return null;
+                }
+            };
+
+            const handleSubmit = async () => {
+                console.log('Submit button clicked!');
+                
+                const feedbackData = {
+                    rating: rating,
+                    comment: comment,
+                    language: language,
+                    timestamp: new Date().toISOString()
+                };
+                
+                console.log('Sending feedback data:', feedbackData);
+                
+                try {
+                    const response = await fetch('https://hook.eu2.make.com/96e1md5ipv45aacpd6li37ghcs3j417x', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(feedbackData)
+                    });
+                    
+                    console.log('Response status:', response.status);
+                    console.log('Response:', response);
+                    
+                    if (response.ok) {
+                        console.log('Success! Feedback submitted.');
+                        setSubmitted(true);
+                    } else {
+                        console.error('Failed to submit feedback. Status:', response.status);
+                        const errorText = await response.text();
+                        console.error('Error details:', errorText);
+                        alert('Κάτι πήγε στραβά. Παρακαλώ δοκιμάστε ξανά.');
+                    }
+                } catch (error) {
+                    console.error('Error submitting feedback:', error);
+                    alert('Σφάλμα σύνδεσης: ' + error.message);
+                }
+            };
+
+            if (submitted) {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+                            <div className="mb-4">
+                                <ThumbsUp className="w-16 h-16 text-green-500 mx-auto" />
+                            </div>
+                            <h2 className="text-2xl font-bold text-gray-800 mb-2">{t.thankYouTitle}</h2>
+                            <p className="text-gray-600">{t.thankYouMessage}</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            const ratingContent = getRatingContent();
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+                    {/* Language Selector - Top Right */}
+                    <div className="fixed top-4 right-4 z-50">
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+                                className="bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg shadow-md flex items-center gap-2 transition-all"
+                            >
+                                <Globe className="w-5 h-5" />
+                                <span>{languageNames[language]}</span>
+                            </button>
+                            
+                            {showLanguageMenu && (
+                                <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
+                                    {Object.keys(translations).map((lang) => (
+                                        <button
+                                            key={lang}
+                                            onClick={() => {
+                                                setLanguage(lang);
+                                                setShowLanguageMenu(false);
+                                            }}
+                                            className={`w-full text-left px-4 py-2 hover:bg-indigo-50 transition-colors ${
+                                                language === lang ? 'bg-indigo-100 text-indigo-700 font-semibold' : 'text-gray-700'
+                                            }`}
+                                        >
+                                            {languageNames[lang]}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full">
+                        <div className="text-center mb-8">
+                            <MessageSquare className="w-12 h-12 text-indigo-600 mx-auto mb-4" />
+                            <h1 className="text-3xl font-bold text-gray-800 mb-2">{t.pageTitle}</h1>
+                            <p className="text-gray-600">{t.pageSubtitle}</p>
+                        </div>
+
+                        <div>
+                            <div className="mb-8">
+                                <label className="block text-lg font-semibold text-gray-700 mb-4 text-center">
+                                    {t.ratingLabel}
+                                </label>
+                                <div className="flex justify-center gap-2 mb-2">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <button
+                                            key={star}
+                                            type="button"
+                                            onClick={() => setRating(star)}
+                                            onMouseEnter={() => setHoveredRating(star)}
+                                            onMouseLeave={() => setHoveredRating(0)}
+                                            className="transition-transform hover:scale-110"
+                                        >
+                                            <Star
+                                                className={`w-12 h-12 ${
+                                                    star <= (hoveredRating || rating)
+                                                        ? 'fill-yellow-400 text-yellow-400'
+                                                        : 'text-gray-300'
+                                                }`}
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="flex justify-between text-sm text-gray-500 px-2">
+                                    <span>{t.ratingBad}</span>
+                                    <span>{t.ratingExcellent}</span>
+                                </div>
+                            </div>
+
+                            {rating > 0 && ratingContent && (
+                                <div className="mb-6 p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-gray-200">
+                                    <div className="text-center mb-6">
+                                        {ratingContent.icon}
+                                        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                                            {ratingContent.title}
+                                        </h2>
+                                        <p className="text-gray-600 mb-4">
+                                            {ratingContent.message}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            {ratingContent.question}
+                                        </label>
+                                        <textarea
+                                            value={comment}
+                                            onChange={(e) => setComment(e.target.value)}
+                                            rows={4}
+                                            placeholder={ratingContent.placeholder}
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-2">{t.optional}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            <button
+                                type="button"
+                                onClick={handleSubmit}
+                                disabled={rating === 0}
+                                className={`w-full py-4 px-6 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all ${
+                                    rating === 0
+                                        ? 'bg-gray-300 cursor-not-allowed'
+                                        : 'bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg'
+                                }`}
+                            >
+                                <Send className="w-5 h-5" />
+                                {rating > 0 ? t.buttonSubmit : t.buttonSelectFirst}
+                            </button>
+                        </div>
+
+                        <p className="text-center text-xs text-gray-500 mt-6">
+                            {t.privacy}
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<FeedbackForm />, document.getElementById('root'));
+    </script>
+</body>
+</html>
